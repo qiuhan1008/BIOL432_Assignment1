@@ -1,0 +1,81 @@
+---
+title: "BIOL432_Assignment1"
+author: "Qiuhan Zhang"
+date: "2023-01-13"
+output: html_document
+---
+
+[My Github repository](https://github.com/qiuhan1008/BIOL432_Assignment1)
+
+1. Load the revised measurements.csv
+
+```{r}
+#This measurement data includes 100 values for limb length and width, which were collected from 5 different species. 
+mydata <- read.csv("measurements.csv")
+```
+
+```{r}
+source("dataGenerato.R", local = knitr::knit_global())
+source("volumeEstimato.R", local = knitr::knit_global())
+```
+
+2. Use dplyr to sort the data by species, then by observer, then by limb volume
+```{r}
+#load library
+library(dplyr)
+```
+
+```{r}
+data1 <- data1 %>% 
+  arrange(organism, Observer, limb_volume) 
+head(data1)
+```
+
+
+3. Create a table showing the average volume for each species
+```{r}
+avgvolume_data <- data1 %>%     
+  group_by(organism) %>%
+  summarise(Ave_volume = mean(limb_volume)) 
+avgvolume_data
+```
+
+
+4. Create a table showing the number of observations (i.e. rows) for each combination of species and observer.
+```{r}
+observation_data <- data1 %>%     
+  group_by(organism, Observer)  %>%     
+  summarise(observations = n(), .groups = "drop") %>%  
+  as.data.frame()
+observation_data
+```
+
+
+5.Create a single box plot (or similar) to compare key features of the distributions of volumes for each species.
+```{r}
+#load ggplot
+library(ggplot2)
+```
+
+```{r}
+volume_plot <- ggplot(data1, 
+                      aes(y = limb_volume, 
+                          x = organism)) + 
+  geom_boxplot() + 
+  labs(x = "Species", 
+       y = "Limb Volume")
+volume_plot
+```
+
+
+6.Create a multi-panel plot showing frequency histograms showing the distribution of limb volume for each species. Note that this may require you to add code to you R markdown file to change the data from the wide to long format.
+```{r}
+volume_distribution <- ggplot(data1, 
+       aes(x = limb_volume)) +
+  geom_histogram() +
+  facet_wrap(vars(organism)) + 
+  labs(x = "Limb Volume", 
+       y = "Frequency")
+volume_distribution
+```
+
